@@ -12,6 +12,17 @@
             stroke: red;
             stroke-width: 2px;
         }
+        .legend {
+            fill: #fff;
+            stroke: #000;
+            stroke-width:2px;
+        }
+        .legend-blue-line {
+            fill: blue;
+        }
+        .legend-red-line {
+            fill: red;
+        }
     </style>
 </head>
 
@@ -77,12 +88,65 @@
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x));
+            
+            //text label for the x axis
+            svg.append("text")             
+                .attr("transform",
+                    "translate(" + (width/2) + " ," + 
+                        (height + margin.top) + ")")
+                .style("text-anchor", "middle")
+                .text("Year");
 
             //add the y-axis
             svg.append("g")
                 .call(d3.axisLeft(y));
 
-        })
+            // text label for the y axis
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x",0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Deviation");
 
+            //legend box
+            svg.append("rect")
+                .attr("class", "legend")
+                .attr("width", 180)
+                .attr("height", 70)
+                .attr("y", 400)
+                .attr("x", 800);
+            
+            //legend blue "line"
+            svg.append("rect")
+                .attr("class", "legend-blue-line")
+                .attr("width", 20)
+                .attr("height", 5)
+                .attr("y", 420)
+                .attr("x", 810);
+
+            //legend red "line"
+            svg.append("rect")
+                .attr("class", "legend-red-line")
+                .attr("width", 20)
+                .attr("height", 5)
+                .attr("y", 445)
+                .attr("x", 810);
+            
+            svg.append("text")
+                .attr("width", 20)
+                .attr("height", 5)
+                .attr("y", 427)
+                .attr("x", 835)
+                .text("Northern Hemisphere");
+
+            svg.append("text")
+                .attr("width", 20)
+                .attr("height", 5)
+                .attr("y", 452)
+                .attr("x", 835)
+                .text("Southern Hemisphere");
+        })
     </script>
 </body>
