@@ -2,9 +2,14 @@
 <head>
     <meta charset="utf-8">
     <style>
-        .line {
+        .nhem-line {
             fill: none;
             stroke: blue;
+            stroke-width: 2px;
+        }
+        .shem-line {
+            fill: none;
+            stroke: red;
             stroke-width: 2px;
         }
     </style>
@@ -18,16 +23,23 @@
             width = 1000,
             height = 500;
 
-        // parse the time units, which is simply years with this data
+        //parse the time units, which is simply years with this data
         var parseTime = d3.timeParse("%Y");
 
         var x = d3.scaleTime().range([0, width]);
         var y = d3.scaleLinear().range([height, 0]);
 
+        //define line for Northern Hemisphere
         var valueline = d3.line()
             .curve(d3.curveCardinal)
             .x(function(d) { return x(d.Year); })
             .y(function(d) { return y(d.NHem); });
+
+        //define line for Southern Hemisphere
+        var valueline2 = d3.line()
+            .curve(d3.curveCardinal)
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(d.SHem); });
 
         var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -40,36 +52,33 @@
         d3.csv("data/GISTEMPData2.csv", function(error, data) {
             if (error) throw error;
 
-            //format the data
             data.forEach(function(d) {
                 d.Year = parseTime(d.Year);
                 d.NHem = +d.NHem;
             });
 
-            // Scale the range of the data
+            //scale the range of the data
             x.domain(d3.extent(data, function(d) { return d.Year; }));
             y.domain([d3.min(data, function(d) {return d.NHem}), d3.max(data, function(d) { return d.NHem; })]);
 
-            // Add the valueline path.
+            //add the Northern Hemisphere valueline path.
             svg.append("path")
                 .data([data])
-                .attr("class", "line")
+                .attr("class", "nhem-line")
                 .attr("d", valueline);
+            
+            //add the Southern Hemisphere valueline path.
+            svg.append("path")
+                .data([data])
+                .attr("class", "shem-line")
+                .attr("d", valueline2);
 
-            // Add the scatterplot
-            svg.selectAll("dot")
-                    .data(data)
-                .enter().append("circle")
-                    .attr("r", 3)
-                    .attr("cx", function(d) { return x(d.Year); })
-                    .attr("cy", function(d) { return y(d.NHem); });
-
-            // Add the X Axis
+            //add the x-axis
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x));
 
-            // Add the Y Axis
+            //add the y-axis
             svg.append("g")
                 .call(d3.axisLeft(y));
 
